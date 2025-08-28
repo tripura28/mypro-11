@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pet Hospitals</title>
+  <title>Pet Hospitals - Adoption Store</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,79 +25,123 @@
     }
     .hospital-card {
       background: white;
-      margin: 15px 0;
+      margin: 20px 0;
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    }
+    .hospital-card h2 {
+      margin: 0 0 10px;
+      color: #ff914d;
+    }
+    .pets {
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 15px;
     }
-    .hospital-card img {
-      width: 120px;
-      height: 100px;
+    .pet-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 180px;
+      text-align: center;
+      padding: 10px;
+      box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
+    }
+    .pet-card img {
+      width: 100%;
+      height: 120px;
       object-fit: cover;
       border-radius: 8px;
     }
-    .hospital-info {
-      flex: 1;
+    .pet-card h4 {
+      margin: 8px 0 5px;
     }
-    .hospital-info h3 {
-      margin: 0;
-      color: #ff914d;
+    button {
+      padding: 6px 10px;
+      background: #ff914d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 5px;
     }
-    .hospital-info p {
-      margin: 5px 0;
-      color: #555;
+    button:hover {
+      background: #e67e22;
+    }
+    #cart {
+      margin-top: 30px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    }
+    #cart h2 {
+      margin-top: 0;
+      color: #27ae60;
+    }
+    #cart ul {
+      list-style: none;
+      padding: 0;
+    }
+    #cart li {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
     }
   </style>
 </head>
 <body>
 
-  <h1>🐾 Pet Availability in Hospitals</h1>
+  <h1>🐾 Pet Hospitals & Adoption Center</h1>
   <input type="text" id="searchBox" placeholder="Search by hospital or pet...">
 
   <div id="hospitalList"></div>
 
+  <div id="cart">
+    <h2>🛒 Your Cart</h2>
+    <ul id="cartList"><li>No pets added yet</li></ul>
+  </div>
+
   <script>
-    // Data: Hospitals with images and available pets
+    // Data: Hospitals with pets and images
     const hospitals = [
       { 
         name: "City Animal Care", 
-        pets: ["Dogs", "Cats", "Rabbits"],
-        image: "https://images.unsplash.com/photo-1603398938378-2f6c3e65e2c1"
+        pets: [
+          { name: "Buddy", type: "Dog", image: "https://images.unsplash.com/photo-1574158622682-e40e69881006" },
+          { name: "Mittens", type: "Cat", image: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131" }
+        ]
       },
       { 
         name: "Happy Tails Veterinary", 
-        pets: ["Dogs", "Birds"],
-        image: "https://images.unsplash.com/photo-1601758123927-1961a7a38a5b"
+        pets: [
+          { name: "Charlie", type: "Dog", image: "https://images.unsplash.com/photo-1558788353-f76d92427f16" },
+          { name: "Coco", type: "Parrot", image: "https://images.unsplash.com/photo-1583337130417-f9ed9631a12e" }
+        ]
       },
       { 
         name: "Green Valley Pet Clinic", 
-        pets: ["Cats", "Parrots", "Hamsters"],
-        image: "https://images.unsplash.com/photo-1574158622682-e40e69881006"
-      },
-      { 
-        name: "Sunrise Animal Hospital", 
-        pets: ["Dogs", "Cats"],
-        image: "https://images.unsplash.com/photo-1558788353-f76d92427f16"
-      },
-      { 
-        name: "Rainbow Pet Health Center", 
-        pets: ["Rabbits", "Birds", "Dogs"],
-        image: "https://images.unsplash.com/photo-1517423440428-a5a00ad493e8"
+        pets: [
+          { name: "Luna", type: "Cat", image: "https://images.unsplash.com/photo-1592194996308-7b43878e84a6" },
+          { name: "Snowball", type: "Rabbit", image: "https://images.unsplash.com/photo-1545060894-1bf5312e0f1a" }
+        ]
       }
     ];
 
     const hospitalList = document.getElementById("hospitalList");
     const searchBox = document.getElementById("searchBox");
+    const cartList = document.getElementById("cartList");
+    let cart = [];
 
-    // Function to display hospitals
+    // Display hospitals and pets
     function displayHospitals(filter = "") {
       hospitalList.innerHTML = "";
       const filteredHospitals = hospitals.filter(hospital =>
         hospital.name.toLowerCase().includes(filter.toLowerCase()) ||
-        hospital.pets.some(pet => pet.toLowerCase().includes(filter.toLowerCase()))
+        hospital.pets.some(pet =>
+          pet.name.toLowerCase().includes(filter.toLowerCase()) ||
+          pet.type.toLowerCase().includes(filter.toLowerCase())
+        )
       );
 
       if (filteredHospitals.length === 0) {
@@ -106,16 +150,46 @@
         filteredHospitals.forEach(hospital => {
           const card = document.createElement("div");
           card.className = "hospital-card";
-          card.innerHTML = `
-            <img src="${hospital.image}" alt="${hospital.name}">
-            <div class="hospital-info">
-              <h3>${hospital.name}</h3>
-              <p><strong>Available Pets:</strong> ${hospital.pets.join(", ")}</p>
-            </div>
-          `;
+          card.innerHTML = `<h2>${hospital.name}</h2>`;
+          
+          const petsDiv = document.createElement("div");
+          petsDiv.className = "pets";
+
+          hospital.pets.forEach(pet => {
+            const petCard = document.createElement("div");
+            petCard.className = "pet-card";
+            petCard.innerHTML = `
+              <img src="${pet.image}" alt="${pet.name}">
+              <h4>${pet.name}</h4>
+              <p>Type: ${pet.type}</p>
+              <button onclick="addToCart('${pet.name}', '${hospital.name}')">Add to Cart</button>
+            `;
+            petsDiv.appendChild(petCard);
+          });
+
+          card.appendChild(petsDiv);
           hospitalList.appendChild(card);
         });
       }
+    }
+
+    // Add pet to cart
+    function addToCart(petName, hospitalName) {
+      if (cartList.innerHTML.includes("No pets added yet")) {
+        cartList.innerHTML = "";
+      }
+      cart.push({pet: petName, hospital: hospitalName});
+      updateCart();
+    }
+
+    // Update cart display
+    function updateCart() {
+      cartList.innerHTML = "";
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.pet} from ${item.hospital}`;
+        cartList.appendChild(li);
+      });
     }
 
     // Initial load
