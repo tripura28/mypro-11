@@ -3,123 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Pet Shop</title>
+  <title>Pet Store - Pet List</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background: #f9f9f9;
     }
-
-    header {
-      background: #ff914d;
-      color: white;
-      padding: 20px;
+    h1 {
       text-align: center;
-    }
-
-    nav {
-      background: #333;
-      padding: 10px;
-      text-align: center;
-    }
-
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    nav a:hover {
       color: #ff914d;
     }
-
-    .hero {
-      background: url('https://images.unsplash.com/photo-1601758123927-1961a7a38a5b') no-repeat center center/cover;
-      color: white;
-      text-align: center;
-      padding: 100px 20px;
-    }
-
-    .hero h1 {
-      font-size: 50px;
-      margin: 0;
-    }
-
-    .container {
-      padding: 40px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .card img {
+    #searchBox {
       width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 10px;
+      padding: 10px;
+      margin: 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
     }
-
-    footer {
-      background: #333;
-      color: white;
-      text-align: center;
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: white;
+      margin: 8px 0;
       padding: 15px;
-      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>🐾 Happy Paws Pet Store</h1>
-    <p>Your one-stop shop for pets and supplies</p>
-  </header>
+  <h1>🐾 Pet List</h1>
+  <input type="text" id="searchBox" placeholder="Search for a pet...">
 
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">Pets</a>
-    <a href="#">Supplies</a>
-    <a href="#">About Us</a>
-    <a href="#">Contact</a>
-  </nav>
+  <ul id="petList"></ul>
 
-  <section class="hero">
-    <h1>Find Your Perfect Pet</h1>
-    <p>Adopt, love, and care 🐶🐱</p>
-  </section>
+  <script>
+    // Pet list data
+    const pets = [
+      { name: "Buddy", type: "Dog", age: 2 },
+      { name: "Mittens", type: "Cat", age: 3 },
+      { name: "Charlie", type: "Dog", age: 1 },
+      { name: "Coco", type: "Parrot", age: 4 },
+      { name: "Snowball", type: "Rabbit", age: 2 },
+      { name: "Luna", type: "Cat", age: 1 }
+    ];
 
-  <section class="container">
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006" alt="Dog">
-      <h3>Dogs</h3>
-      <p>Loyal and loving companions ready for adoption.</p>
-    </div>
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131" alt="Cat">
-      <h3>Cats</h3>
-      <p>Independent yet affectionate furry friends.</p>
-    </div>
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1583337130417-f9ed9631a12e" alt="Bird">
-      <h3>Birds</h3>
-      <p>Colorful and cheerful companions for your home.</p>
-    </div>
-  </section>
+    const petList = document.getElementById("petList");
+    const searchBox = document.getElementById("searchBox");
 
-  <footer>
-    <p>&copy; 2025 Happy Paws Pet Store | Designed for Web Development Project</p>
-  </footer>
+    // Function to display pets
+    function displayPets(filter = "") {
+      petList.innerHTML = "";
+      const filteredPets = pets.filter(pet =>
+        pet.name.toLowerCase().includes(filter.toLowerCase()) ||
+        pet.type.toLowerCase().includes(filter.toLowerCase())
+      );
+      
+      if (filteredPets.length === 0) {
+        petList.innerHTML = "<li>No pets found 🐾</li>";
+      } else {
+        filteredPets.forEach(pet => {
+          const li = document.createElement("li");
+          li.textContent = `${pet.name} - ${pet.type}, Age: ${pet.age}`;
+          petList.appendChild(li);
+        });
+      }
+    }
 
+    // Initial load
+    displayPets();
+
+    // Event listener for search
+    searchBox.addEventListener("input", (e) => {
+      displayPets(e.target.value);
+    });
+  </script>
 </body>
 </html>
