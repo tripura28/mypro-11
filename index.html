@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pet Store - Pet List</title>
+  <title>Pet Hospitals</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,66 +23,107 @@
       border-radius: 5px;
       font-size: 16px;
     }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
+    .hospital-card {
       background: white;
-      margin: 8px 0;
+      margin: 15px 0;
       padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .hospital-card img {
+      width: 120px;
+      height: 100px;
+      object-fit: cover;
       border-radius: 8px;
-      box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
-      font-size: 18px;
+    }
+    .hospital-info {
+      flex: 1;
+    }
+    .hospital-info h3 {
+      margin: 0;
+      color: #ff914d;
+    }
+    .hospital-info p {
+      margin: 5px 0;
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-  <h1>🐾 Pet List</h1>
-  <input type="text" id="searchBox" placeholder="Search for a pet...">
+  <h1>🐾 Pet Availability in Hospitals</h1>
+  <input type="text" id="searchBox" placeholder="Search by hospital or pet...">
 
-  <ul id="petList"></ul>
+  <div id="hospitalList"></div>
 
   <script>
-    // Pet list data
-    const pets = [
-      { name: "Buddy", type: "Dog", age: 2 },
-      { name: "Mittens", type: "Cat", age: 3 },
-      { name: "Charlie", type: "Dog", age: 1 },
-      { name: "Coco", type: "Parrot", age: 4 },
-      { name: "Snowball", type: "Rabbit", age: 2 },
-      { name: "Luna", type: "Cat", age: 1 }
+    // Data: Hospitals with images and available pets
+    const hospitals = [
+      { 
+        name: "City Animal Care", 
+        pets: ["Dogs", "Cats", "Rabbits"],
+        image: "https://images.unsplash.com/photo-1603398938378-2f6c3e65e2c1"
+      },
+      { 
+        name: "Happy Tails Veterinary", 
+        pets: ["Dogs", "Birds"],
+        image: "https://images.unsplash.com/photo-1601758123927-1961a7a38a5b"
+      },
+      { 
+        name: "Green Valley Pet Clinic", 
+        pets: ["Cats", "Parrots", "Hamsters"],
+        image: "https://images.unsplash.com/photo-1574158622682-e40e69881006"
+      },
+      { 
+        name: "Sunrise Animal Hospital", 
+        pets: ["Dogs", "Cats"],
+        image: "https://images.unsplash.com/photo-1558788353-f76d92427f16"
+      },
+      { 
+        name: "Rainbow Pet Health Center", 
+        pets: ["Rabbits", "Birds", "Dogs"],
+        image: "https://images.unsplash.com/photo-1517423440428-a5a00ad493e8"
+      }
     ];
 
-    const petList = document.getElementById("petList");
+    const hospitalList = document.getElementById("hospitalList");
     const searchBox = document.getElementById("searchBox");
 
-    // Function to display pets
-    function displayPets(filter = "") {
-      petList.innerHTML = "";
-      const filteredPets = pets.filter(pet =>
-        pet.name.toLowerCase().includes(filter.toLowerCase()) ||
-        pet.type.toLowerCase().includes(filter.toLowerCase())
+    // Function to display hospitals
+    function displayHospitals(filter = "") {
+      hospitalList.innerHTML = "";
+      const filteredHospitals = hospitals.filter(hospital =>
+        hospital.name.toLowerCase().includes(filter.toLowerCase()) ||
+        hospital.pets.some(pet => pet.toLowerCase().includes(filter.toLowerCase()))
       );
-      
-      if (filteredPets.length === 0) {
-        petList.innerHTML = "<li>No pets found 🐾</li>";
+
+      if (filteredHospitals.length === 0) {
+        hospitalList.innerHTML = "<p>No results found 🐾</p>";
       } else {
-        filteredPets.forEach(pet => {
-          const li = document.createElement("li");
-          li.textContent = `${pet.name} - ${pet.type}, Age: ${pet.age}`;
-          petList.appendChild(li);
+        filteredHospitals.forEach(hospital => {
+          const card = document.createElement("div");
+          card.className = "hospital-card";
+          card.innerHTML = `
+            <img src="${hospital.image}" alt="${hospital.name}">
+            <div class="hospital-info">
+              <h3>${hospital.name}</h3>
+              <p><strong>Available Pets:</strong> ${hospital.pets.join(", ")}</p>
+            </div>
+          `;
+          hospitalList.appendChild(card);
         });
       }
     }
 
     // Initial load
-    displayPets();
+    displayHospitals();
 
-    // Event listener for search
+    // Search event
     searchBox.addEventListener("input", (e) => {
-      displayPets(e.target.value);
+      displayHospitals(e.target.value);
     });
   </script>
 </body>
